@@ -1,17 +1,23 @@
-fs = require 'fs'
 sys = require 'sys'
-{ spawn, exec } = require 'child_process'
+{exec} = require 'child_process'
 
-task 'spec:client', 'Run all specs in spec/client', ->
-  exec 'NODE_ENV=test ./node_modules/.bin/mocha --compilers cofee:coffee-script spec/client/test.coffee', (error, stdout, , stderr) ->
-    sys.print stdout if stdout
-    sys.print stdout if stderr
+task 'spec:server', 'Test server-side specs', ->
+  exec 'NODE_ENV=test ./node_modules/.bin/mocha --compilers cofee:coffee-script spec/server/test.coffee', (err, stdout, stderr) ->
+    throw err if err
+    sys.print "Test server-side specs\n" + stdout + stderr + "\n----------------------------------------\n"
 
-task 'spec:server', 'Run all specs in spec/server', ->
-  exec 'NODE_ENV=test ./node_modules/.bin/mocha --compilers cofee:coffee-script spec/server/test.coffee', (error, stdout, , stderr) ->
-    sys.print stdout if stdout
-    sys.print stdout if stderr
+task 'spec:client', 'Test client-side specs', ->
+  exec 'NODE_ENV=test ./node_modules/.bin/mocha --compilers cofee:coffee-script spec/client/test.coffee', (err, stdout, stderr) ->
+    throw err if err
+    sys.print "Test client-side specs\n" + stdout + stderr + "\n----------------------------------------\n"
+
+task 'spec:user', 'Test user-interaction specs (headless-browser)', ->
+  exec 'NODE_ENV=test ./node_modules/.bin/mocha --compilers cofee:coffee-script spec/user/test.coffee', (err, stdout, stderr) ->
+    throw err if err
+    sys.print "Test user-interaction specs (headless-browser)\n" + stdout + stderr + "\n----------------------------------------\n"
+
 
 task 'spec', 'Run all client and server specs', ->
-  invoke 'spec:client'
   invoke 'spec:server'
+  invoke 'spec:client'
+  invoke 'spec:user'
